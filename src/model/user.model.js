@@ -26,10 +26,10 @@ const userSchema = new Schema(
     },
     profileImage: {
       type: String,
-      default: "",
+      default: "", // Store relative path or filename
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 // 🔐 Hash password before saving
@@ -43,5 +43,12 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.isPasswordCorrect = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+// 🌐 Virtual for full profile image URL
+userSchema.virtual("profileImageUrl").get(function () {
+  if (!this.profileImage) return "";
+  const baseUrl = "http://localhost:3000";
+  return `${baseUrl}/uploads/${this.profileImage}`;
+});
 
 export const User = mongoose.model("User", userSchema);
