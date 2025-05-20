@@ -3,30 +3,28 @@ import { User } from "../model/user.model.js";
 export const register = async (req, res) => {
   try {
     const { fullName, email, password, phone, gender } = req.body;
+    const profileImage = req.file ? req.file.filename : undefined;
 
+    // Check if email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    // 🆕 Create new user
+    // Create new user with profile image
     const newUser = await User.create({
       fullName,
       email,
       password,
       phone,
       gender,
+      profileImage,
     });
+    console.log(newUser);
 
     res.status(201).json({
       message: "User registered",
-      user: {
-        id: newUser._id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phone: newUser.phone,
-        gender: newUser.gender,
-      },
+      user: newUser.toJSON(),
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -51,13 +49,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone,
-        gender: user.gender,
-      },
+      user: user.toJSON(),
     });
   } catch (err) {
     console.error(err);
@@ -103,7 +95,7 @@ export const updateProfile = async (req, res) => {
     };
 
     if (profileImage) {
-      updateData.profileImage = profileImage; // or req.file.path if saving full path
+      updateData.profileImage = profileImage;
     }
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
