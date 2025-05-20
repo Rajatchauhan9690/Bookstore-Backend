@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     profileImage: {
       type: String,
-      default: "", // Store relative path or filename
+      default: "",
     },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
