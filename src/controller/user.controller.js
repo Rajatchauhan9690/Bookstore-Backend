@@ -2,7 +2,8 @@ import { User } from "../model/user.model.js";
 
 export const register = async (req, res) => {
   try {
-    const { fullName, email, password, phone, gender, customGender } = req.body;
+    const { fullName, email, password, phone, gender, customGender, dob } =
+      req.body;
     const profileImage = req.file ? req.file.filename : undefined;
 
     const allowedGenders = ["Male", "Female", "Other", "Prefer Not To Say"];
@@ -16,6 +17,15 @@ export const register = async (req, res) => {
         .json({ message: "Please provide a custom gender" });
     }
 
+    if (!dob) {
+      return res.status(400).json({ message: "Date of birth is required" });
+    }
+
+    const parsedDob = new Date(dob);
+    if (isNaN(parsedDob.getTime())) {
+      return res.status(400).json({ message: "Invalid date of birth format" });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
@@ -27,9 +37,11 @@ export const register = async (req, res) => {
       password,
       phone,
       gender,
+      dob: parsedDob, // use the validated date
       customGender: gender === "Other" ? customGender : "",
       profileImage,
     });
+
     console.log(newUser);
 
     res.status(201).json({
@@ -90,7 +102,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { id, fullName, email, phone, gender, customGender } = req.body;
+    const { id, fullName, email, phone, gender, customGender, dob } = req.body;
     const profileImage = req.file ? req.file.filename : undefined;
 
     if (!id) {
@@ -104,6 +116,10 @@ export const updateProfile = async (req, res) => {
       gender,
       customGender: gender === "Other" ? customGender : "",
     };
+
+    if (dob) {
+      updateData.dob = new Date(dob);
+    }
 
     if (profileImage) {
       updateData.profileImage = profileImage;
