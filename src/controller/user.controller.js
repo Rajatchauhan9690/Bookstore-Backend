@@ -2,22 +2,32 @@ import { User } from "../model/user.model.js";
 
 export const register = async (req, res) => {
   try {
-    const { fullName, email, password, phone, gender } = req.body;
+    const { fullName, email, password, phone, gender, customGender } = req.body;
     const profileImage = req.file ? req.file.filename : undefined;
 
-    // Check if email is already registered
+    const allowedGenders = ["Male", "Female", "Other", "Prefer Not To Say"];
+    if (!allowedGenders.includes(gender)) {
+      return res.status(400).json({ message: "Invalid gender value" });
+    }
+
+    if (gender === "Other" && !customGender) {
+      return res
+        .status(400)
+        .json({ message: "Please provide a custom gender" });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    // Create new user with profile image
     const newUser = await User.create({
       fullName,
       email,
       password,
       phone,
       gender,
+      customGender: gender === "Other" ? customGender : "",
       profileImage,
     });
     console.log(newUser);
@@ -80,7 +90,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { id, fullName, email, phone, gender } = req.body;
+    const { id, fullName, email, phone, gender, customGender } = req.body;
     const profileImage = req.file ? req.file.filename : undefined;
 
     if (!id) {
@@ -92,6 +102,7 @@ export const updateProfile = async (req, res) => {
       email,
       phone,
       gender,
+      customGender: gender === "Other" ? customGender : "",
     };
 
     if (profileImage) {
