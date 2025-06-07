@@ -42,7 +42,7 @@ export const register = async (req, res) => {
       profileImage,
     });
 
-    console.log(newUser);
+    // console.log(newUser);
 
     res.status(201).json({
       message: "User registered",
