@@ -37,12 +37,10 @@ export const register = async (req, res) => {
       password,
       phone,
       gender,
-      dob: parsedDob, // use the validated date
+      dob: parsedDob,
       customGender: gender === "Other" ? customGender : "",
       profileImage,
     });
-
-    // console.log(newUser);
 
     res.status(201).json({
       message: "User registered",
