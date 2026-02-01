@@ -1,10 +1,7 @@
-// server.js (or index.js)
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./src/db/index.js"; // Your DB connection function
-
-// Import routes
+import connectDB from "./src/db/index.js";
 import bookRoutes from "./src/route/book.route.js";
 import userRoutes from "./src/route/user.route.js";
 import contactRoutes from "./src/route/contact.route.js";
@@ -12,12 +9,9 @@ import contactRoutes from "./src/route/contact.route.js";
 dotenv.config();
 
 const app = express();
-
-// Middleware
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
-// CORS configuration
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -27,15 +21,11 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Static folder for uploads
 app.use("/uploads", express.static("uploads"));
+app.use("/api/v1/book", bookRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/contact", contactRoutes);
 
-// API Routes
-app.use("/api/v1/books", bookRoutes); // Prefix books routes
-app.use("/api/v1/users", userRoutes); // Prefix users routes
-app.use("/api/v1/contacts", contactRoutes); // Prefix contacts routes
-
-// Start server after DB connection
 const PORT = process.env.PORT || 5000;
 
 connectDB()
