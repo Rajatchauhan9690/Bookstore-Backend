@@ -22,10 +22,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/uploads", express.static("uploads"));
-app.use("/api/v1/book", bookRoutes);
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/contact", contactRoutes);
-
+app.use("/api/v1/books", bookRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/contacts", contactRoutes);
 const PORT = process.env.PORT || 5000;
 
 connectDB()
