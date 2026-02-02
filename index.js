@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "https://bookstore-frontend-tawny.vercel.app",
+    "https://book-store-frontend-kappa-ten.vercel.app",
   ],
   credentials: true,
 };
